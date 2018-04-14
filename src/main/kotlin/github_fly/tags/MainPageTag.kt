@@ -1,13 +1,14 @@
-package example.tags
+package github_fly.tags
 
-import example.buildScript
-import example.riot
+import github_fly.buildScript
+import github_fly.riot
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.events.KeyboardEvent
 
 data class SearchItem(val title: String, val url: String)
 
 interface MainPageTag {
+    var keyword: String
     var matchedItems: Array<SearchItem>
     var search: (KeyboardEvent) -> Unit
 }
@@ -22,8 +23,8 @@ private const val TEMPLATE = """
     <div><input type='text' onkeyup={search} autofocus /></div>
     <div>
         <ul>
-            <li each={matchedItems}>
-                {title}
+            <li each="{matchedItems}">
+                <highlight-matching content="{this.title}" keyword="{parent.keyword}"></highlight-matching>
             </li>
         </ul>
     </div>
@@ -34,11 +35,12 @@ private fun findMatchedItems(items: Array<SearchItem>, keyword: String): Array<S
     return items.filter { it.title.contains(keyword) }.toTypedArray()
 }
 
-private val script = buildScript<MainPageTag> {
+private val script = buildScript<MainPageTag, dynamic> {
+    this.keyword = ""
     this.matchedItems = initData
     this.search = fun(event: KeyboardEvent) {
-        val keyword: String? = (event.target as? HTMLInputElement)?.value?.trim()
-        this.matchedItems = if (keyword == null) initData else findMatchedItems(initData, keyword)
+        this.keyword = (event.target as? HTMLInputElement)?.value?.trim() ?: ""
+        this.matchedItems = if (keyword.isEmpty()) initData else findMatchedItems(initData, keyword)
     }
 }
 
@@ -48,4 +50,3 @@ val mainPageTag = riot.tag("main-page",
         script = script
 )
 
-//<highlight-matching-component :content="item.title" :keyword="keyword" />

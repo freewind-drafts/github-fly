@@ -1,6 +1,5 @@
-package example
+package github_fly
 
 fun main(args: Array<String>) {
-    buildSampleTag()
     riot.mount("*")
 }
