@@ -2,6 +2,7 @@ package github_fly.tags
 
 import github_fly.buildScript
 import github_fly.riot
+import github_fly.utils.matched
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.events.KeyboardEvent
 
@@ -32,7 +33,7 @@ private const val TEMPLATE = """
 """
 
 private fun findMatchedItems(items: Array<SearchItem>, keyword: String): Array<SearchItem> {
-    return items.filter { it.title.contains(keyword) }.toTypedArray()
+    return items.filter { matched(it.title, keyword) }.toTypedArray()
 }
 
 private val script = buildScript<MainPageTag, dynamic> {
